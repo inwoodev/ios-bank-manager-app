@@ -34,9 +34,7 @@ final class LocalBankTask: Operation {
         case .loan:
             let loanProcess = WorkType.LoanProcess.self
             print("\(waitNumber)번 \(credit)고객 \(loanProcess.loanExecution) 시작")
-            
-            let headBankTask = HeadBankTask(number: waitNumber, rating: credit, type: workType)
-            HeadBank.shared.serveClient(localLoanData: headBankTask)
+            HeadBank.shared.serveClient(number: waitNumber, rating: credit, type: taskType)
             print("\(waitNumber)번 \(credit)고객 \(loanProcess.loanExecution) 완료")
         }
     }
