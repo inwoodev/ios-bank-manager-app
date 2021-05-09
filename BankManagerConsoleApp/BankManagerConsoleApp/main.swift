@@ -11,7 +11,8 @@ final class main {
         BankInterface().displayMenu()
         switch inputMenuNumber() {
         case 1:
-            LocalBank(numberOfBankTellers: 3).serveClient()
+            let totalClient = Int.random(in: 10...30)
+            LocalBank(numberOfBankTellers: 3, numberOfTotalClient: totalClient).serveClient()
         case 2:
             exit(0)
         default:
