@@ -8,10 +8,11 @@
 import Foundation
 
 final class LocalBank {
-    var bankWindow = OperationQueue()
-    var workTime = Double.zero
-    var taskList: [LocalBankTask] = []
-    var headBank: HeadBank?
+    private var bankWindow: OperationQueue
+    private var workTime = Double.zero
+    private var taskList: [LocalBankTask] = []
+    private var headBank: HeadBank?
+    private var totalClient: Int
     
     init(numberOfBankTellers bankTeller: Int, numberOfTotalClient totalClient: Int) {
         self.bankWindow = OperationQueue()
