@@ -22,6 +22,17 @@ extension CreditRating: CustomStringConvertible {
             return "일반"
         }
     }
+    
+    var priority: Operation.QueuePriority {
+        switch self {
+        case .vvip:
+            return .high
+        case .vip:
+            return .normal
+        case .normal:
+            return .low
+        }
+    }
 }
 
 enum WorkType: CaseIterable {
