@@ -2,47 +2,61 @@
 //  LocalBank.swift
 //  BankManagerConsoleApp
 //
-//  Created by 윤재웅 on 2021/05/04.
+//  Created by James,Fezz on 2021/05/04.
 //
 
 import Foundation
 
 final class LocalBank {
-    var bankWindow = OperationQueue()
-    var workTime = Double.zero
-    var taskList: [LocalBankTask] = []
-    var headBank: HeadBank?
+    private var bankWindow: OperationQueue
+    private var workTime = Double.zero
+    private var depositTaskList: [DepositTask] = []
+    private var loanTaskList: [LoanTask] = []
+    private var headBank: HeadBank
+    private var totalClient: Int
     
-    func serveClient(numberOfBankTellers bankTeller: Int) {
+    init(numberOfBankTellers bankTeller: Int, numberOfTotalClient totalClient: Int) {
+        self.bankWindow = OperationQueue()
         bankWindow.maxConcurrentOperationCount = bankTeller
-        let totalCustomer = receiveClient()
-        for waitNumber in 1...totalCustomer {
+        self.totalClient = totalClient
+        headBank = HeadBank()
+    }
+    
+    func serveClient(completion: (String) -> ()) {
+        for waitNumber in 1...totalClient {
             let waitLineNumber = UInt(waitNumber)
-            guard let localBankTask = LocalBankTask(waitLineNumber) else {
+            let bankingType = randomizeTaskType()
+            assignTask(bankingType, waitLineNumber)
+        }
+        bankWindow.addOperations(depositTaskList + loanTaskList, waitUntilFinished: true)
+        completion(String(format: "%.2f", workTime))
+    }
+    
+    private func randomizeTaskType() -> WorkType {
+        guard let banking = WorkType.allCases.randomElement() else {
+            return .deposit
+        }
+        return banking
+    }
+    
+    private func assignTask(_ banking: WorkType, _ waitNumber: UInt) {
+        switch banking {
+        case .deposit:
+            guard let task = DepositTask(waitNumber) else {
                 return
             }
-            assignPriority(localBankTask)
-            taskList.append(localBankTask)
-            localBankTask.completionBlock = {
-                self.workTime += localBankTask.workType.duration
+            depositTaskList.append(task)
+            task.completionBlock = {
+                self.workTime += task.workType.duration
             }
-        }
-        bankWindow.addOperations(taskList, waitUntilFinished: true)
-        print("업무가 마감되었습니다. 오늘 업무를 처리한 고객은 총 \(totalCustomer)명이며, 총 업무시간은\(String(format: "%.2f", workTime))초 입니다.")
-    }
-    
-    private func receiveClient() -> Int {
-        return Int.random(in: 10...30)
-    }
-    
-    private func assignPriority(_ task: LocalBankTask) {
-        switch task.creditRate {
-        case .vvip:
-            return task.queuePriority = .high
-        case .vip:
-            return task.queuePriority = .normal
-        case .normal:
-            return task.queuePriority = .low
+        case .loan:
+            guard let task = LoanTask(waitNumber, headBank) else {
+                return
+            }
+            loanTaskList.append(task)
+            task.completionBlock = {
+                self.workTime += task.workType.duration
+            }
         }
     }
 }

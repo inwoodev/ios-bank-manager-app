@@ -2,7 +2,7 @@
 //  BankInterface.swift
 //  BankManagerConsoleApp
 //
-//  Created by 황인우 on 2021/05/06.
+//  Created by James,Fezz on 2021/05/06.
 //
 
 import Foundation
